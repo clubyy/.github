@@ -1,75 +1,195 @@
-🚀 CLUBY Platform - Team Guide
+# 🚀 CLUBY Platform – Team Guide
 
-Welcome to the CLUBY development team. This project uses a decoupled architecture to manage a club activity ecosystem. To maintain code quality, we follow a strict Feature Branch Workflow.
-🏗️ Organization Structure
+> **Purpose**: This README explains how the CLUBY platform is organized, how the team collaborates using Git, and how to get a local environment running. It is intended for all developers joining or contributing to the project.
 
-    cluby-infra: Docker Compose, PostgreSQL, Redis, and Keycloak (realms/infos.json).
+---
 
-    cluby-backend: .NET 8 Clean Architecture API.
+## 🏗️ Organization Structure
 
-    cluby-web: React Feature-based Web Dashboard.
+> **Annotation**: CLUBY uses a **decoupled architecture**. Each repository has a single responsibility, which allows teams to work independently while sharing contracts and infrastructure.
 
-    cluby-mobile: React Native Mobile Application.
+* **cluby-infra**
+  *Infrastructure & shared services*
 
-🌿 The Development Workflow (Branches)
+  * Docker Compose
+  * PostgreSQL
+  * Redis
+  * Keycloak (realm configuration in `realms/infos.json`)
 
-Strict Rule: No one pushes directly to the main branch. All changes must go through a Pull Request.
-1. Starting a New Feature
+* **cluby-backend**
+  *.NET 8 API following Clean Architecture*
 
-Always start by pulling the latest changes to ensure your base is up to date.
-Bash
+  * Domain-driven structure
+  * Authentication via Keycloak
+  * RESTful endpoints consumed by Web & Mobile
 
+* **cluby-web**
+  *React Web Dashboard*
+
+  * Feature-based folder structure
+  * Used by admins and club managers
+
+* **cluby-mobile**
+  *React Native Mobile Application*
+
+  * End-user focused
+  * Shares API contracts with the backend
+
+---
+
+## 🌿 Development Workflow (Feature Branch Workflow)
+
+> **Annotation**: To protect stability and code quality, **direct pushes to `main` are strictly forbidden**. Every change must go through a Pull Request.
+
+### 🔒 Golden Rule
+
+* ❌ Never push directly to `main`
+* ✅ Always work in a branch and open a PR
+
+---
+
+## 1️⃣ Starting a New Feature
+
+> **Annotation**: Always branch from the latest `main` to avoid conflicts and outdated code.
+
+```bash
 git checkout main
 git pull origin main
 git checkout -b feature/your-feature-name
+```
 
-Use naming conventions like feature/, fix/, or refactor/.
-2. Committing Work
+**Branch naming conventions**:
 
-Break your work into small, logical commits.
-Bash
+* `feature/your-feature-name`
+* `fix/bug-description`
+* `refactor/module-or-concept`
 
+---
+
+## 2️⃣ Committing Your Work
+
+> **Annotation**: Small, logical commits make reviews easier and help track changes clearly.
+
+```bash
 git add .
 git commit -m "feat: add member attendance validation logic"
+```
 
-3. Syncing with Main (Rebasing)
+**Commit message tips**:
 
-If your colleagues merged work into main while you were working, rebase your branch to avoid messy merge commits.
-Bash
+* Use present tense (`add`, `fix`, `refactor`)
+* Be concise but descriptive
 
+---
+
+## 3️⃣ Syncing With `main` (Rebasing)
+
+> **Annotation**: Rebasing keeps the Git history clean and avoids unnecessary merge commits.
+
+```bash
 git fetch origin
 git rebase origin/main
+```
 
-4. Pushing and Pull Requests
+If conflicts occur:
 
-Push your branch to GitHub and open a Pull Request (PR).
-Bash
+* Resolve them carefully
+* Continue rebase with `git rebase --continue`
 
+---
+
+## 4️⃣ Pushing & Opening a Pull Request
+
+> **Annotation**: Pull Requests are mandatory and ensure shared code ownership.
+
+```bash
 git push -u origin feature/your-feature-name
+```
 
-    Review: At least one other team member must review the code before merging.
+**Pull Request rules**:
 
-    Cleanup: Delete your local and remote branch after the PR is merged.
+* At least **one team member review** is required
+* CI must pass before merging
+* Use clear PR descriptions (what & why)
 
-⚙️ Infrastructure & Keycloak
+**After merge**:
 
-Since Keycloak configuration is shared via cluby-infra/realms/infos.json, follow this if your feature adds new roles or clients:
+* Delete the remote branch
+* Delete your local branch
 
-    Modify Keycloak in your local browser (localhost:8080).
+---
 
-    Export the new config:
-    docker exec <container_name> /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/infos.json
+## ⚙️ Infrastructure & Keycloak Configuration
 
-    Commit the updated infos.json to a branch in cluby-infra.
+> **Annotation**: Keycloak is a shared dependency. Any change to roles or clients affects the entire system.
 
-    Notify the team in your Backend/Frontend PR that they need to pull the new Infra branch.
+If your feature introduces **new roles, clients, or permissions**:
 
-📥 Getting Started for New Members
+1. Modify Keycloak locally
 
-    Clone the Infrastructure: git clone https://github.com/clubyy/cluby_infra.git
+   * Access: `http://localhost:8080`
 
-    Setup Env: Copy .env.example to .env.
+2. Export the updated configuration:
 
-    Launch: docker-compose up -d
+```bash
+docker exec <container_name> \
+  /opt/keycloak/bin/kc.sh export \
+  --file /opt/keycloak/data/import/infos.json
+```
 
-    Clone Apps: Proceed to clone cluby-backend and cluby-web.
+3. Commit the updated `infos.json` **in a new branch** of `cluby-infra`
+
+4. Notify the team in your Backend/Web PR:
+
+   * Mention that a new Infra branch must be pulled
+
+---
+
+## 📥 Getting Started (New Team Members)
+
+> **Annotation**: Infrastructure always comes first. Applications depend on shared services.
+
+### 1. Clone Infrastructure
+
+```bash
+git clone https://github.com/clubyy/cluby_infra.git
+```
+
+### 2. Environment Setup
+
+```bash
+cp .env.example .env
+```
+
+Update values if needed (ports, secrets, etc.).
+
+### 3. Launch Infrastructure
+
+```bash
+docker-compose up -d
+```
+
+Verify that:
+
+* PostgreSQL is running
+* Redis is running
+* Keycloak is accessible
+
+### 4. Clone Applications
+
+```bash
+git clone https://github.com/clubyy/cluby-backend.git
+git clone https://github.com/clubyy/cluby-web.git
+```
+
+Follow each repository’s README for run instructions.
+
+---
+
+## ✅ Final Notes
+
+* Keep branches short-lived
+* Communicate infra changes early
+* Prefer clarity over cleverness in code
+
+Welcome to the team — happy building! 🚀
