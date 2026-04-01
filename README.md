@@ -14,7 +14,7 @@
   * Docker Compose
   * PostgreSQL
   * Redis
-  * Keycloak (realm configuration in `realms/infos.json`)
+  * Keycloak (realm configuration in `cluby/infrast/realms/`)
 
 * **cluby-backend**
   *.NET 8 API following Clean Architecture*
@@ -181,7 +181,38 @@ Verify that:
 git clone https://github.com/clubyy/cluby-backend.git
 git clone https://github.com/clubyy/cluby-web.git
 ```
+## ☁️ Azure Setup (Required)
 
+# Azure is used for deployments and infrastructure operations.
+
+## 1. Install Azure CLI
+
+# Check if installed:
+``` bash 
+
+az --version
+```
+
+# If not installed:
+https://learn.microsoft.com/cli/azure/install-azure-cli
+``` bash 
+2. Login to Azure
+az login
+```
+This opens a browser for authentication.
+
+# 3. Select Subscription
+``` bash 
+az account list --output table
+az account set --subscription "<SUBSCRIPTION_ID>"
+az account show
+```
+
+Ensure:
+
+Correct subscription
+Correct tenant
+Active session
 Follow each repository’s README for run instructions.
 
 ---
